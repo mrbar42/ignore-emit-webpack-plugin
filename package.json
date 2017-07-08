@@ -1,0 +1,27 @@
+{
+  "name": "ignore-emit-webpack-plugin",
+  "version": "0.2.0",
+  "description": "Prevents ignored files from being emitted during a Webpack build",
+  "main": "ignore-emit-webpack-plugin.js",
+  "scripts": {
+    "prepublish": "mkdir -p es5 && babel ignore-emit-webpack-plugin.js --out-file es5/index.js --presets=es2015"
+  },
+  "keywords": [
+    "webpack",
+    "plugin",
+    "ignore",
+    "emit",
+    "asset",
+    "assets"
+  ],
+  "author": "mrbar42",
+  "license": "WTFPL",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mrbar42/ignore-emit-webpack-plugin.git"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-preset-es2015": "^6.24.1"
+  }
+}
