@@ -1,5 +1,7 @@
 # Ignore Emit Webpack plugin
 
+[![Build Status](https://travis-ci.org/mrbar42/ignore-emit-webpack-plugin.svg?branch=master)](https://travis-ci.org/mrbar42/ignore-emit-webpack-plugin)
+
 Prevent files that are matching a pattern from being emitted in a webpack build.
 This is achieved with a webpack plugin.
 
