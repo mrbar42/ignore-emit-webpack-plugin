@@ -37,15 +37,13 @@ class IgnoreEmitPlugin {
   }
 
   apply(compiler) {
-    compiler.plugin('emit', (compilation, callback) => {
+    compiler.hooks.emit.tap('IgnoreEmitPlugin', compilation => {
       Object.keys(compilation.assets).forEach(assetName => {
         if (this.checkIgnore(assetName, this.ignorePatterns)) {
           this.DEBUG && console.log(`IgnoreEmitPlugin: Ignoring asset ${assetName}`);
           delete compilation.assets[assetName];
         }
       });
-
-      callback();
     });
   }
 }
