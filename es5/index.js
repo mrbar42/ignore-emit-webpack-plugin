@@ -4,6 +4,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+var PLUGIN_NAME = "IgnoreEmitPlugin";
+
 var IgnoreEmitPlugin = function () {
   function IgnoreEmitPlugin() {
     var ignoreRegex = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
@@ -52,7 +54,7 @@ var IgnoreEmitPlugin = function () {
     value: function apply(compiler) {
       var _this2 = this;
 
-      compiler.plugin('emit', function (compilation, callback) {
+      compiler.hooks.emit.tapAsync(PLUGIN_NAME, function (compilation, callback) {
         Object.keys(compilation.assets).forEach(function (assetName) {
           if (_this2.checkIgnore(assetName, _this2.ignorePatterns)) {
             _this2.DEBUG && console.log('IgnoreEmitPlugin: Ignoring asset ' + assetName);
