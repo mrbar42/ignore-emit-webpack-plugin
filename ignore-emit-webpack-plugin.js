@@ -1,5 +1,5 @@
-'use strict';
 
+const PLUGIN_NAME = "IgnoreEmitPlugin";
 class IgnoreEmitPlugin {
   constructor(ignoreRegex = [], options = {}) {
     if (!ignoreRegex || Array.isArray(ignoreRegex) && !ignoreRegex.length) {
@@ -37,7 +37,7 @@ class IgnoreEmitPlugin {
   }
 
   apply(compiler) {
-    compiler.plugin('emit', (compilation, callback) => {
+    compiler.hooks.emit.tapAsync(PLUGIN_NAME, (compilation, callback) => {
       Object.keys(compilation.assets).forEach(assetName => {
         if (this.checkIgnore(assetName, this.ignorePatterns)) {
           this.DEBUG && console.log(`IgnoreEmitPlugin: Ignoring asset ${assetName}`);
