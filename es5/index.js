@@ -52,15 +52,13 @@ var IgnoreEmitPlugin = function () {
     value: function apply(compiler) {
       var _this2 = this;
 
-      compiler.plugin('emit', function (compilation, callback) {
+      compiler.hooks.emit.tap('IgnoreEmitPlugin', function (compilation) {
         Object.keys(compilation.assets).forEach(function (assetName) {
           if (_this2.checkIgnore(assetName, _this2.ignorePatterns)) {
             _this2.DEBUG && console.log('IgnoreEmitPlugin: Ignoring asset ' + assetName);
             delete compilation.assets[assetName];
           }
         });
-
-        callback();
       });
     }
   }]);
