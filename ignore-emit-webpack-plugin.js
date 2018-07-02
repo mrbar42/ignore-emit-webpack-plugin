@@ -33,18 +33,30 @@ class IgnoreEmitPlugin {
       }
 
       return pattern.test(assetName);
-    })
+    });
   }
 
   apply(compiler) {
-    compiler.hooks.emit.tap('IgnoreEmitPlugin', compilation => {
+    const ignoreAssets = compilation => {
       Object.keys(compilation.assets).forEach(assetName => {
         if (this.checkIgnore(assetName, this.ignorePatterns)) {
           this.DEBUG && console.log(`IgnoreEmitPlugin: Ignoring asset ${assetName}`);
           delete compilation.assets[assetName];
         }
       });
-    });
+    };
+
+    // webpack 4
+    if (compiler.hooks && compiler.hooks.emit) {
+      compiler.hooks.emit.tap('IgnoreEmitPlugin', ignoreAssets);
+    }
+    // webpack 3
+    else {
+      compiler.plugin('emit', (compilation, callback) => {
+        ignoreAssets(compilation);
+        callback();
+      });
+    }
   }
 }
 
