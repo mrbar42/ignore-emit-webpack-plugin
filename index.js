@@ -1,14 +1,9 @@
 'use strict';
-
 Object.defineProperty(exports, "__esModule", { value: true });
-var IgnoreEmitPlugin = /** @class */function () {
+var IgnoreEmitPlugin = /** @class */ (function () {
     function IgnoreEmitPlugin(ignoreRegex, options) {
-        if (ignoreRegex === void 0) {
-            ignoreRegex = [];
-        }
-        if (options === void 0) {
-            options = {};
-        }
+        if (ignoreRegex === void 0) { ignoreRegex = []; }
+        if (options === void 0) { options = {}; }
         if (!ignoreRegex || Array.isArray(ignoreRegex) && !ignoreRegex.length) {
             throw new Error("IgnoreEmitPlugin: Must include patterns to ignore");
         }
@@ -19,14 +14,16 @@ var IgnoreEmitPlugin = /** @class */function () {
     IgnoreEmitPlugin.prototype.normalizeRegex = function (regex) {
         if (regex instanceof RegExp) {
             return [regex];
-        } else if (Array.isArray(regex)) {
+        }
+        else if (Array.isArray(regex)) {
             var normalizedList = [];
             for (var _i = 0, regex_1 = regex; _i < regex_1.length; _i++) {
                 var input = regex_1[_i];
                 normalizedList.push.apply(normalizedList, this.normalizeRegex(input));
             }
             return normalizedList;
-        } else if (typeof regex === 'string') {
+        }
+        else if (typeof regex === 'string') {
             // escape special chars and create a regex instance
             return [new RegExp(regex.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'))];
         }
@@ -43,7 +40,7 @@ var IgnoreEmitPlugin = /** @class */function () {
     };
     IgnoreEmitPlugin.prototype.apply = function (compiler) {
         var _this = this;
-        var ignoreAssets = function ignoreAssets(compilation) {
+        var ignoreAssets = function (compilation) {
             Object.keys(compilation.assets).forEach(function (assetName) {
                 if (_this.checkIgnore(assetName, _this.ignorePatterns)) {
                     _this.DEBUG && console.log("IgnoreEmitPlugin: Ignoring asset " + assetName);
@@ -57,14 +54,14 @@ var IgnoreEmitPlugin = /** @class */function () {
         }
         // webpack 3
         else {
-                compiler.plugin('emit', function (compilation, callback) {
-                    ignoreAssets(compilation);
-                    callback();
-                });
-            }
+            compiler.plugin('emit', function (compilation, callback) {
+                ignoreAssets(compilation);
+                callback();
+            });
+        }
     };
     return IgnoreEmitPlugin;
-}();
+}());
 exports.IgnoreEmitPlugin = IgnoreEmitPlugin;
 exports.default = IgnoreEmitPlugin;
 // support plain node require
