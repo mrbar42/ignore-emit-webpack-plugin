@@ -2,3 +2,4 @@ test/
 .editorconfig
 .travis.yml
 .gitignore
+tsconfig.json

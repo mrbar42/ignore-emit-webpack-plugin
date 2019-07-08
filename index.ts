@@ -1,7 +1,15 @@
 'use strict';
 
+import {Compiler} from "webpack";
+import * as webpack from "webpack";
+import Compilation = webpack.compilation.Compilation;
+
 class IgnoreEmitPlugin {
-  constructor(ignoreRegex = [], options = {}) {
+  private readonly options: { debug?: boolean };
+  private readonly DEBUG: boolean;
+  private readonly ignorePatterns: RegExp[];
+
+  constructor(ignoreRegex: RegExp | string | Array<RegExp | string> = [], options: { debug?: boolean; } = {}) {
     if (!ignoreRegex || Array.isArray(ignoreRegex) && !ignoreRegex.length) {
       throw new Error(`IgnoreEmitPlugin: Must include patterns to ignore`);
     }
@@ -11,22 +19,24 @@ class IgnoreEmitPlugin {
     this.ignorePatterns = this.normalizeRegex(ignoreRegex);
   }
 
-  normalizeRegex(regex) {
+  private normalizeRegex(regex: RegExp | string | Array<RegExp | string>): RegExp[] {
     if (regex instanceof RegExp) {
       return [regex];
-    }
-    else if (Array.isArray(regex)) {
-      return regex.map(this.normalizeRegex, this);
-    }
-    else if (typeof regex === 'string') {
+    } else if (Array.isArray(regex)) {
+      const normalizedList = [];
+      for (const input of regex) {
+        normalizedList.push(...this.normalizeRegex(input));
+      }
+      return normalizedList;
+    } else if (typeof regex === 'string') {
       // escape special chars and create a regex instance
       return [new RegExp(regex.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'))];
     }
 
-    throw new Error('IgnoreEmitPlugin: invalid ignore pattern - must be {RegExp|string|Array.<RegExp|string>');
+    throw new Error('IgnoreEmitPlugin: invalid ignore pattern - must be {RegExp|string|Array<RegExp|string>');
   }
 
-  checkIgnore(assetName, ignorePatterns) {
+  private checkIgnore(assetName: string, ignorePatterns: RegExp[]): boolean {
     return ignorePatterns.some(pattern => {
       if (Array.isArray(pattern)) {
         return this.checkIgnore(assetName, pattern);
@@ -36,8 +46,8 @@ class IgnoreEmitPlugin {
     });
   }
 
-  apply(compiler) {
-    const ignoreAssets = compilation => {
+  public apply(compiler: Compiler) {
+    const ignoreAssets = (compilation: Compilation) => {
       Object.keys(compilation.assets).forEach(assetName => {
         if (this.checkIgnore(assetName, this.ignorePatterns)) {
           this.DEBUG && console.log(`IgnoreEmitPlugin: Ignoring asset ${assetName}`);
@@ -60,4 +70,10 @@ class IgnoreEmitPlugin {
   }
 }
 
+export {IgnoreEmitPlugin};
+export default IgnoreEmitPlugin;
+
+// support plain node require
 module.exports = IgnoreEmitPlugin;
+module.exports.default = IgnoreEmitPlugin;
+module.exports.IgnoreEmitPlugin = IgnoreEmitPlugin;
