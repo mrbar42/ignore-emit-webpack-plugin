@@ -11,14 +11,16 @@ cd "$(dirname $0)"
 # clean
 rm -fr tmp
 
+test_id="webpack3"
+
 # install webpack 3
-npm i -s --no-package-lock --prefix ./ webpack@3
+npm i -s --no-warnings --no-progress --no-audit --no-package-lock --prefix ./ webpack@3
 
 # build
-output="$(node_modules/.bin/webpack --config webpack3.config.js)"
+output="$(node_modules/.bin/webpack --config webpack3.config.js 2>&1)"
 
 expected() {
-  echo "[FAILED] expected $1"
+  echo -e "\033[0;31m [$test_id][FAILED] expected $1 \033[0m"
   exit 1
 }
 
@@ -29,8 +31,8 @@ if [[ ! -f 'tmp/app.js' ]]; then
 elif [[ -f 'tmp/chunk.js' ]]; then
   expected "chunk.js to not exist on output folder"
 elif [[ "$does_contain_deprecation" ]]; then
-  expected "output to not contain deprecation warnings"
+  expected "output to not contain deprecation warnings\n\033[1;33m$output"
 fi
 
-echo "[WEBPACK3 TEST OK]"
+echo -e "\033[0;32m [$test_id][TEST OK] \033[0m"
 exit 0
