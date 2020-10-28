@@ -2,6 +2,7 @@
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.IgnoreEmitPlugin = void 0;
+var webpack_1 = require("webpack");
 var IgnoreEmitPlugin = /** @class */function () {
     function IgnoreEmitPlugin(ignoreRegex, options) {
         if (ignoreRegex === void 0) {
@@ -48,13 +49,27 @@ var IgnoreEmitPlugin = /** @class */function () {
             Object.keys(compilation.assets).forEach(function (assetName) {
                 if (_this.checkIgnore(assetName, _this.ignorePatterns)) {
                     _this.DEBUG && console.log("IgnoreEmitPlugin: Ignoring asset " + assetName);
-                    delete compilation.assets[assetName];
+                    if (typeof compilation.deleteAsset === 'function') {
+                        // Webpack 5
+                        compilation.deleteAsset(assetName);
+                    } else {
+                        // older versions
+                        delete compilation.assets[assetName];
+                    }
                 }
             });
         };
         // webpack 4/5
-        if (compiler.hooks && compiler.hooks.emit) {
-            compiler.hooks.emit.tap('IgnoreEmitPlugin', ignoreAssets);
+        if (compiler.hooks && compiler.hooks.compilation) {
+            // compiler.hooks.emit.tap('IgnoreEmitPlugin', ignoreAssets);
+            compiler.hooks.compilation.tap('IgnoreEmitPlugin', function (compilation) {
+                compilation.hooks.processAssets.tap({
+                    name: 'IgnoreEmitPlugin',
+                    stage: webpack_1.Compilation.PROCESS_ASSETS_STAGE_ADDITIONS
+                }, function () {
+                    ignoreAssets(compilation);
+                });
+            });
         }
         // webpack 3
         else {
