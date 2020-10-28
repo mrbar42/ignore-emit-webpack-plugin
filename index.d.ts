@@ -1,4 +1,4 @@
-import { Compiler } from "webpack";
+import { Compiler } from 'webpack';
 declare class IgnoreEmitPlugin {
     private readonly options;
     private readonly DEBUG;

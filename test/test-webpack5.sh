@@ -11,10 +11,13 @@ cd "$(dirname $0)"
 # clean
 rm -fr tmp
 
-test_id="LatestWebpack"
+test_id="Webpack5"
+
+# install webpack 4
+npm i -s --no-warnings --no-progress --no-audit --no-package-lock --prefix ./ webpack@5
 
 # build
-output="$(../node_modules/.bin/webpack-cli --config webpack.config.js 2>&1)"
+output="$(node_modules/.bin/webpack --config webpack4.config.ts 2>&1)"
 
 expected() {
   echo -e "\033[0;31m [$test_id][FAILED] expected $1 \033[0m"

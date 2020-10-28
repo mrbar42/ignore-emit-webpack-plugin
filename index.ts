@@ -1,8 +1,6 @@
 'use strict';
 
-import {Compiler} from "webpack";
-import * as webpack from "webpack";
-import Compilation = webpack.compilation.Compilation;
+import {Compilation, Compiler} from 'webpack';
 
 class IgnoreEmitPlugin {
   private readonly options: { debug?: boolean };
@@ -51,17 +49,39 @@ class IgnoreEmitPlugin {
       Object.keys(compilation.assets).forEach(assetName => {
         if (this.checkIgnore(assetName, this.ignorePatterns)) {
           this.DEBUG && console.log(`IgnoreEmitPlugin: Ignoring asset ${assetName}`);
-          delete compilation.assets[assetName];
+          if (typeof compilation.deleteAsset === 'function') {
+            // Webpack 5
+            compilation.deleteAsset(assetName);
+          } else {
+            // older versions
+            delete compilation.assets[assetName];
+          }
         }
       });
     };
 
-    // webpack 4
-    if (compiler.hooks && compiler.hooks.emit) {
-      compiler.hooks.emit.tap('IgnoreEmitPlugin', ignoreAssets);
+    // webpack 4/5
+    if (compiler.hooks && compiler.hooks.compilation) {
+      // compiler.hooks.emit.tap('IgnoreEmitPlugin', ignoreAssets);
+      compiler.hooks.compilation.tap(
+        'IgnoreEmitPlugin',
+        (compilation: Compilation) => {
+          compilation.hooks.processAssets.tap(
+            {
+              name: 'IgnoreEmitPlugin',
+              stage: Compilation.PROCESS_ASSETS_STAGE_ADDITIONS
+            },
+            () => {
+              ignoreAssets(compilation);
+            }
+          );
+        }
+      );
+
     }
     // webpack 3
     else {
+      // @ts-ignore - this signature does not exist on the latest webpack typing
       compiler.plugin('emit', (compilation, callback) => {
         ignoreAssets(compilation);
         callback();

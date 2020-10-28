@@ -1,6 +1,7 @@
 'use strict';
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.IgnoreEmitPlugin = void 0;
 var IgnoreEmitPlugin = /** @class */function () {
     function IgnoreEmitPlugin(ignoreRegex, options) {
         if (ignoreRegex === void 0) {
@@ -51,12 +52,13 @@ var IgnoreEmitPlugin = /** @class */function () {
                 }
             });
         };
-        // webpack 4
+        // webpack 4/5
         if (compiler.hooks && compiler.hooks.emit) {
             compiler.hooks.emit.tap('IgnoreEmitPlugin', ignoreAssets);
         }
         // webpack 3
         else {
+                // @ts-ignore - this signature does not exist on the latest webpack typing
                 compiler.plugin('emit', function (compilation, callback) {
                     ignoreAssets(compilation);
                     callback();
