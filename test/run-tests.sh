@@ -8,13 +8,14 @@ function run() {
     exit 1
   fi
 
-  test_webpack "Webpack3" "webpack@3.0.0" "webpack3.config.js" || failed=1
+  npm ci
+
+  test_webpack "Webpack3" "webpack@3.0.0 webpack-cli@2" "webpack3.config.js" || failed=1
   test_webpack "Webpack4" "webpack@4.0.0 webpack-cli@3" "webpack4.config.js" || failed=1
   test_webpack "Webpack5" "webpack@5.0.0 webpack-cli@4" "webpack5.config.js" || failed=1
   test_webpack "WebpackLatest" "webpack@latest webpack-cli@latest" "webpack.config.js" || failed=1
 
-#  rm -fr node_modules
-#  npm ci
+  npm ci
 
   if [[ "$failed" ]]; then
     echo "Some tests failed!"
@@ -27,14 +28,16 @@ function test_webpack() {
   local packages="$2"
   local config="$3"
 
+  echo "[$test_id] Starting test"
+
   # clean
   rm -fr test/tmp
 
-  npm r --no-warnings --no-save --no-progress --no-audit --no-package-lock webpack webpack-cli
-  npm i --no-warnings --no-save --no-progress --no-audit --no-package-lock ${packages}
+  npm r --no-warnings --no-save --no-progress --no-audit --no-package-lock webpack webpack-cli || return 1
+  npm i --no-warnings --no-save --no-progress --no-audit --no-package-lock ${packages} || return 1
 
   if [[ ! "$(node_modules/.bin/webpack -v)" ]]; then
-    echo "Webpack executable didn't print version"
+    echo "[$test_id] Webpack executable didn't print version"
     return 1
   fi
 
