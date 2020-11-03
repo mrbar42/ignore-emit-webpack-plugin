@@ -1,3 +1,7 @@
 language: node_js
 node_js:
-  - "node"
+  - "8"
+  - "10"
+  - "12"
+cache:
+  npm: false
