@@ -5,7 +5,7 @@ const IgnoreEmitPlugin = require('../');
 module.exports = {
   bail: true,
   entry: {
-    app: './app.js'
+    app: './test/app.js'
   },
   output: {
     filename: '[name].js',

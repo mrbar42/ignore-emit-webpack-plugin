@@ -1,9 +1,9 @@
 {
   "name": "ignore-emit-webpack-plugin",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "Prevents ignored files from being emitted during a Webpack build",
   "scripts": {
-    "test:webpack": "bash test/test.sh && bash test/test-webpack3.sh && bash test/test-webpack4.sh && bash test/test-webpack5.sh",
+    "test:webpack": "bash test/run-tests.sh",
     "test:unit": "node test/test-api.js",
     "test": "npm -s run test:unit && npm -s run test:webpack",
     "build": "tsc",
@@ -29,7 +29,7 @@
     "babel-cli": "^6.26.0",
     "babel-preset-es2015": "^6.24.1",
     "typescript": "^4.0.3",
-    "webpack": ">=5.2.0",
+    "webpack": ">=5.4.0",
     "webpack-cli": "latest"
   }
 }
