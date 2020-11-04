@@ -1,6 +1,6 @@
 'use strict';
 
-import {Compilation, Compiler} from 'webpack';
+import {version, Compilation, Compiler} from 'webpack';
 
 class IgnoreEmitPlugin {
   private readonly options: { debug?: boolean };
@@ -60,24 +60,32 @@ class IgnoreEmitPlugin {
       });
     };
 
-    // webpack 4/5
-    if (compiler.hooks && compiler.hooks.compilation) {
-      // compiler.hooks.emit.tap('IgnoreEmitPlugin', ignoreAssets);
+    // webpack 5
+    if (compiler.hooks && compiler.hooks.compilation && version) {
       compiler.hooks.compilation.tap(
         'IgnoreEmitPlugin',
         (compilation: Compilation) => {
-          compilation.hooks.processAssets.tap(
-            {
-              name: 'IgnoreEmitPlugin',
-              stage: Compilation.PROCESS_ASSETS_STAGE_ADDITIONS
-            },
-            () => {
-              ignoreAssets(compilation);
-            }
-          );
+          if (compilation.hooks.processAssets) {
+            compilation.hooks.processAssets.tap(
+              {
+                name: 'IgnoreEmitPlugin',
+                stage: Compilation.PROCESS_ASSETS_STAGE_ADDITIONS
+              },
+              () => {
+                ignoreAssets(compilation);
+              }
+            );
+          } else {
+            compilation.hooks.additionalAssets.tap('IgnoreEmitPlugin',
+              () => ignoreAssets(compilation)
+            );
+          }
         }
       );
-
+    }
+    // webpack 4
+    else if (compiler.hooks && compiler.hooks.emit) {
+      compiler.hooks.emit.tap('IgnoreEmitPlugin', ignoreAssets);
     }
     // webpack 3
     else {

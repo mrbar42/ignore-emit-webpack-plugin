@@ -6,7 +6,7 @@ module.exports = {
   bail: true,
   mode: 'production',
   entry: {
-    app: './app.js'
+    app: './test/app.js'
   },
   output: {
     publicPath: '',

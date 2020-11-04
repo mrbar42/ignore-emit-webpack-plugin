@@ -59,26 +59,35 @@ var IgnoreEmitPlugin = /** @class */function () {
                 }
             });
         };
-        // webpack 4/5
-        if (compiler.hooks && compiler.hooks.compilation) {
-            // compiler.hooks.emit.tap('IgnoreEmitPlugin', ignoreAssets);
+        // webpack 5
+        if (compiler.hooks && compiler.hooks.compilation && webpack_1.version) {
             compiler.hooks.compilation.tap('IgnoreEmitPlugin', function (compilation) {
-                compilation.hooks.processAssets.tap({
-                    name: 'IgnoreEmitPlugin',
-                    stage: webpack_1.Compilation.PROCESS_ASSETS_STAGE_ADDITIONS
-                }, function () {
-                    ignoreAssets(compilation);
-                });
+                if (compilation.hooks.processAssets) {
+                    compilation.hooks.processAssets.tap({
+                        name: 'IgnoreEmitPlugin',
+                        stage: webpack_1.Compilation.PROCESS_ASSETS_STAGE_ADDITIONS
+                    }, function () {
+                        ignoreAssets(compilation);
+                    });
+                } else {
+                    compilation.hooks.additionalAssets.tap('IgnoreEmitPlugin', function () {
+                        return ignoreAssets(compilation);
+                    });
+                }
             });
         }
-        // webpack 3
-        else {
-                // @ts-ignore - this signature does not exist on the latest webpack typing
-                compiler.plugin('emit', function (compilation, callback) {
-                    ignoreAssets(compilation);
-                    callback();
-                });
+        // webpack 4
+        else if (compiler.hooks && compiler.hooks.emit) {
+                compiler.hooks.emit.tap('IgnoreEmitPlugin', ignoreAssets);
             }
+            // webpack 3
+            else {
+                    // @ts-ignore - this signature does not exist on the latest webpack typing
+                    compiler.plugin('emit', function (compilation, callback) {
+                        ignoreAssets(compilation);
+                        callback();
+                    });
+                }
     };
     return IgnoreEmitPlugin;
 }();
