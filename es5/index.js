@@ -60,7 +60,8 @@ var IgnoreEmitPlugin = /** @class */function () {
             });
         };
         // webpack 5
-        if (compiler.hooks && compiler.hooks.compilation && webpack_1.version) {
+        if (compiler.hooks && compiler.hooks.compilation && webpack_1.version && Number(webpack_1.version[0]) > 4) {
+            this.DEBUG && console.log('Using Webpack5 format');
             compiler.hooks.compilation.tap('IgnoreEmitPlugin', function (compilation) {
                 if (compilation.hooks.processAssets) {
                     compilation.hooks.processAssets.tap({
@@ -78,10 +79,12 @@ var IgnoreEmitPlugin = /** @class */function () {
         }
         // webpack 4
         else if (compiler.hooks && compiler.hooks.emit) {
+                this.DEBUG && console.log('Using Webpack4 format');
                 compiler.hooks.emit.tap('IgnoreEmitPlugin', ignoreAssets);
             }
             // webpack 3
             else {
+                    this.DEBUG && console.log('Using Webpack3 or older format');
                     // @ts-ignore - this signature does not exist on the latest webpack typing
                     compiler.plugin('emit', function (compilation, callback) {
                         ignoreAssets(compilation);
