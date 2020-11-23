@@ -61,7 +61,8 @@ class IgnoreEmitPlugin {
     };
 
     // webpack 5
-    if (compiler.hooks && compiler.hooks.compilation && version) {
+    if (compiler.hooks && compiler.hooks.compilation && version && Number(version[0]) > 4) {
+      this.DEBUG && console.log('Using Webpack5 format');
       compiler.hooks.compilation.tap(
         'IgnoreEmitPlugin',
         (compilation: Compilation) => {
@@ -85,10 +86,12 @@ class IgnoreEmitPlugin {
     }
     // webpack 4
     else if (compiler.hooks && compiler.hooks.emit) {
+      this.DEBUG && console.log('Using Webpack4 format');
       compiler.hooks.emit.tap('IgnoreEmitPlugin', ignoreAssets);
     }
     // webpack 3
     else {
+      this.DEBUG && console.log('Using Webpack3 or older format');
       // @ts-ignore - this signature does not exist on the latest webpack typing
       compiler.plugin('emit', (compilation, callback) => {
         ignoreAssets(compilation);

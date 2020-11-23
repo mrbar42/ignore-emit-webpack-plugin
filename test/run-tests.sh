@@ -8,14 +8,15 @@ function run() {
     exit 1
   fi
 
-  npm ci
+#  npm ci
 
   test_webpack "Webpack3" "webpack@3.0.0 webpack-cli@2" "webpack3.config.js" || failed=1
   test_webpack "Webpack4" "webpack@4.0.0 webpack-cli@3" "webpack4.config.js" || failed=1
   test_webpack "Webpack5" "webpack@5.0.0 webpack-cli@4" "webpack5.config.js" || failed=1
   test_webpack "WebpackLatest" "webpack@latest webpack-cli@latest" "webpack.config.js" || failed=1
+  test_webpack "Webpack4+Plugins" "webpack@4.41.6 webpack-cli@3 terser-webpack-plugin@3.1.0" "webpack-terser.config.js" || failed=1
 
-  npm ci
+#  npm ci
 
   if [[ "$failed" ]]; then
     echo "Some tests failed!"
@@ -42,7 +43,7 @@ function test_webpack() {
   fi
 
   # build
-  output="$(node_modules/.bin/webpack --config "test/$config" 2>&1)"
+  output="$(node_modules/.bin/webpack --config "test/$config" --bail --color 2>&1)"
   echo "$output"
 
   does_contain_deprecation=$(echo "$output" | grep -i "Warning" || echo '')

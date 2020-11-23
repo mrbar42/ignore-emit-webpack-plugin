@@ -1,6 +1,6 @@
 {
   "name": "ignore-emit-webpack-plugin",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "description": "Prevents ignored files from being emitted during a Webpack build",
   "scripts": {
     "test:webpack": "bash test/run-tests.sh",
